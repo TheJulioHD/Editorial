@@ -1,0 +1,77 @@
+<div class="container mt-5">
+    <div class="row">
+      <!-- Columna izquierda: Buscar personal -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Buscar Personal</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="typeaheadForm!">
+              <div class="form-group">
+                <label for="typeaheadInput" class="form-label">Nombre del Personal</label>
+                <input
+                  id="typeaheadInput"
+                  type="text"
+                  class="form-control"
+                  formControlName="searchTerm"
+                  (input)="onSearch($event)"
+                  placeholder="Ejemplo: Juan"
+                />
+                <!-- Sugerencias -->
+                <ul class="list-group mt-2" *ngIf="filteredSuggestions.length > 0">
+                  <li
+                    *ngFor="let suggestion of filteredSuggestions"
+                    class="list-group-item list-group-item-action"
+                    (click)="selectSuggestion(suggestion)"
+                  >
+                    {{ suggestion }}
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Columna derecha: Cantidad de hojas -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Cantidad de Hojas</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="typeaheadForm2!">
+              <div class="form-group">
+                <label for="cant" class="form-label">Ingrese la Cantidad</label>
+                <input
+                  type="text"
+                  id="cant"
+                  class="form-control"
+                  formControlName="cant"
+                  placeholder="Ejemplo: 100"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Botón enviar -->
+    <div class="row">
+      <div class="col-12 text-center">
+        <button (click)="enviar()" class="btn btn-primary btn-lg shadow-sm">
+          Enviar
+        </button>
+      </div>
+    </div>
+  
+    <!-- Componente de Home -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <app-home></app-home>
+      </div>
+    </div>
+  </div>
+  

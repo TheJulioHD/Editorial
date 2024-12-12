@@ -1,0 +1,32 @@
+.card {
+    border-radius: 8px;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .table th, .table td {
+    vertical-align: middle;
+  }
+  
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .table-bordered {
+    border: 2px solid #dee2e6;
+  }
+  
+  .table thead th {
+    background-color: #343a40;
+    color: white;
+  }
+  
+  h1 {
+    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+    color: #343a40;
+  }
+  

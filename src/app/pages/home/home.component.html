@@ -1,0 +1,113 @@
+<div class="container my-4">
+    <!-- Título del Dashboard -->
+    <h1 class="text-center mb-4">Dashboard de Hojas</h1>
+
+    <!-- Tarjetas Resumen -->
+    <div class="row text-center mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Hojas</h5>
+                    <p class="card-text display-4">{{ totalSheets }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Días Registrados</h5>
+                    <p class="card-text display-4">{{ getKeys(sumByDay).length }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Usuarios Registrados</h5>
+                    <p class="card-text display-4">{{ getKeys(sumByPerson).length }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Departamentos -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Detalles por Departamento</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Full Name</th>
+                            <th>Department</th>
+                            <th>Creation Date</th>
+                            <th>Cantidad de Hojas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of departamentos; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.departamento }}</td>
+                            <td>{{ item.creationDate }}</td>
+                            <td>{{ item.cantidadHojas }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Hojas por Día -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Suma de Hojas por Día</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cantidad Total de Hojas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let day of getKeys2(sumByDay)">
+                            <td>{{ day }}</td>
+                            <td>{{ sumByDay[day] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Hojas por Persona -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Suma de Hojas por Persona</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Nombre de Usuario</th>
+                            <th>Cantidad de Hojas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let personId of getKeys(sumByPerson)">
+                            <td>{{ userNames[personId] || 'Desconocido' }}</td>
+                            <td>{{ sumByPerson[personId] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

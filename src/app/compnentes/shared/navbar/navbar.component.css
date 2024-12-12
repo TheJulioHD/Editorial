@@ -1,0 +1,21 @@
+.navbar {
+    border-radius: 0 0 10px 10px;
+  }
+  
+  .nav-link {
+    transition: all 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
+  
+  .navbar-toggler-icon {
+    filter: invert(1);
+  }
+  
