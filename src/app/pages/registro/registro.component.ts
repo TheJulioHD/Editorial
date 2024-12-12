@@ -55,6 +55,7 @@ export class RegistroComponent implements OnInit {
         error: (err) => {
           console.error('Error al obtener datos:', err);
         }
+        
       });
     } 
   }
