@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { ClsModRelHoja2 } from '../models/reluser';
 import { SearchModel } from '../models/pagination';
 import { ClsModUser } from '../models/user';
 import { ClsModRelHoja } from '../models/relhoja';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,7 @@ export class UserService {
             departamento: item.departamento || '',
             creationDate: item.creationDate || '',
             cantidadHojas: item.cantidadHojas || 0,
+            cantLostHojas: item.cantLostHojas || 0,
             idUsuario: item.idUsuario || 0
           })) as ClsModRelHoja2[];
         }
@@ -55,6 +56,9 @@ export class UserService {
 
   add2(data: ClsModRelHoja){
     return this.http.post<any>(`${this.url}User/add2`, data)
+  }
+  add(data: ClsModUser){
+    return this.http.post<any>(`${this.url}User/add`, data)
   }
   
 }

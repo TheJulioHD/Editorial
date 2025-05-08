@@ -8,12 +8,17 @@ import { HomeComponent } from './pages/home/home.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RegistroComponent } from './pages/registro/registro.component';
+import { AddUserComponent } from './pages/add-user/add-user.component';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { NoFoundComponent } from './pages/no-found/no-found.component';
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     HomeComponent,
-    RegistroComponent
+    RegistroComponent,
+    AddUserComponent,
+    NoFoundComponent
   ],
   imports: [
     BrowserModule,
@@ -21,7 +26,8 @@ import { RegistroComponent } from './pages/registro/registro.component';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

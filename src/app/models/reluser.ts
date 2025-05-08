@@ -5,5 +5,6 @@ export interface ClsModRelHoja2 {
     departamento: string;
     creationDate: string;
     cantidadHojas: number;
+    cantLostHojas: number;
     idUsuario: number;
   }

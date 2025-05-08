@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  URlApiEditorial: 'https://editorialith.somee.com/api/'
+
 };

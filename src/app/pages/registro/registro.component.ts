@@ -19,7 +19,7 @@ export class RegistroComponent implements OnInit {
   filteredSuggestions: string[] = [];
   results: ClsModUser[]=[] ; // Almacena los datos obtenidos de la API
   id: number = 0;
-
+  lost: boolean = false;
   constructor(private user: UserService) {}
 
   ngOnInit(): void {
@@ -29,7 +29,13 @@ export class RegistroComponent implements OnInit {
 
     this.typeaheadForm2 = new FormGroup({
       cant: new FormControl('', Validators.required), // Ajusta las validaciones según sea necesario
+      cantlost: new FormControl(''), // Ajusta las validaciones según sea necesario
+      isCheck: new FormControl(''), // Ajusta las validaciones según sea necesario
     });
+  }
+
+  toggleLost(): void {
+    this.lost = this.typeaheadForm2!.get('isCheck')?.value || false;
   }
 
   onSearch(event: Event): void {
@@ -73,16 +79,19 @@ export class RegistroComponent implements OnInit {
   }
 
   enviar() {
+    
     if (this.typeaheadForm2?.valid) {
       const user3: ClsModRelHoja = {
         cantidadHojas:this.typeaheadForm2.value.cant,
-        idUsuario: this.id
+        idUsuario: this.id, 
+        cantidadLostHojas: (this.typeaheadForm2.value.cantlost == '' ) ? 0 : this.typeaheadForm2.value.cantlost 
       }
   
       // Llama al servicio add2
       this.user.add2(user3).subscribe({
         next: (response) => {
           console.log('Datos enviados correctamente:', response);
+          window.location.reload();
         },
         error: (err) => {
           console.error('Error al enviar datos:', err);
@@ -92,6 +101,8 @@ export class RegistroComponent implements OnInit {
       console.log(
         `${this.typeaheadForm2.value.cant.trim()} prueba ${this.id}`
       );
+
+      
     } else {
       console.log('Formulario inválido');
     }
