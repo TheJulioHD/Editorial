@@ -92,6 +92,48 @@
           </div>
         </div>
       </div>
+      <div class="col-md-6 mb-4" >
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Cantidad de Hojas Que trajo el Maestro</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="typeaheadForm2!">
+              <div class="form-group">
+                <label for="cant" class="form-label">Ingrese la Cantidad que trajo el maestro</label>
+                <input
+                  type="text"
+                  id="cant"
+                  class="form-control"
+                  formControlName="cantlost"
+                  placeholder="Ejemplo: 100"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4" >
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Selecciona la fecha</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="typeaheadForm2!">
+              <div class="form-group">
+                <label for="fecha" class="form-label">Ingrese la fecha</label>
+                <input
+                  type="datetime-local"
+                  id="fecha"
+                  class="form-control"
+                  formControlName="fecha"
+                />
+              </div>
+              
+            </form>
+          </div>
+        </div>
+      </div>
       
     </div>
 

@@ -6,9 +6,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-center mb-0">Dashboard de Hojas</h1>
-        <button 
-            class="btn btn-outline-success btn-lg shadow-sm" 
-            (click)="exportToExcel()">
+        <button class="btn btn-outline-success btn-lg shadow-sm" (click)="exportToExcel()">
             <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
         </button>
     </div>
@@ -40,6 +38,31 @@
             </div>
         </div>
     </div>
+        <!-- Graficos CSS-only: barra por dia y donut buenas vs perdidas -->
+        <div class="charts">
+            <div class="bar-chart">
+                <h5 class="mb-3">Suma de Hojas por Día (Gráfico)</h5>
+                <div *ngFor="let month of sortedMonthKeys" class="bar-row">
+                    <div class="bar-label">{{ month }}</div>
+                    <div class="bar" role="progressbar" [attr.aria-valuenow]="sumByMonth[month]" [attr.aria-valuemax]="totalSheetstotal">
+                        <div class="bar-fill" [style.width.%]="(sumByMonth[month] / (totalSheetstotal || 1)) * 100"></div>
+                    </div>
+                    <div class="bar-value">{{ sumByMonth[month] }}</div>
+                </div>
+            </div>
+
+            <div class="donut-card">
+                <h5 class="mb-3">Buenas vs Perdidas</h5>
+                <div class="donut"
+                         [style.background]="'conic-gradient(#28a745 0deg ' + ((totalSheets/(totalSheetstotal||1))*360) + 'deg, #dc3545 ' + ((totalSheets/(totalSheetstotal||1))*360) + 'deg 360deg)'">
+                    <div class="donut-center">{{ ((totalSheets/(totalSheetstotal||1))*100) | number:'1.0-0' }}%</div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-swatch" style="background:#28a745"></div> Buenas ({{ totalSheets }})</div>
+                    <div class="legend-item"><div class="legend-swatch" style="background:#dc3545"></div> Perdidas ({{ totalSheetslost }})</div>
+                </div>
+            </div>
+        </div>
     <div class="row text-center mb-4">
         <div class="col-md-4">
             <div class="card shadow-sm">
@@ -57,7 +80,7 @@
                 </div>
             </div>
         </div>
-       
+
     </div>
 
     <!-- Tabla de Departamentos -->
@@ -79,19 +102,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of departamentos; let i = index">
-                            <td>{{ i + 1 }}</td>
+                        <tr *ngFor="let item of departamentos2; let i = index">
+                            <td>{{ (currentPage - 1) * rpp + i + 1 }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.departamento }}</td>
-                            <td>{{ item.creationDate }}</td>
+                            <td>{{ convertToLocal(item.creationDate) | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+
                             <td>{{ item.cantidadHojas }}</td>
                             <td>{{ item.cantLostHojas }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
+            <!-- Botones de paginación -->
+            <div class="d-flex justify-content-center mt-3 gap-2">
+                <button class="btn btn-outline-primary" (click)="prevPage()"
+                    [disabled]="currentPage === 1">Anterior</button>
+                <span class="align-self-center">Página {{ currentPage }}</span>
+                <button class="btn btn-outline-primary" (click)="nextPage()">Siguiente</button>
+            </div>
         </div>
     </div>
+
 
     <!-- Tabla de Hojas por Día -->
     <div class="card mb-4 shadow-sm">
@@ -108,7 +141,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let day of getKeys2(sumByDay)">
+                        <tr *ngFor="let day of sortedDayKeys">
                             <td>{{ day }}</td>
                             <td>{{ sumByDay[day] }}</td>
                         </tr>
@@ -141,51 +174,70 @@
         </div>
     </div>
 
-    <!-- Tabla de Hojas por Persona -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0">Suma de Hojas por Persona</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Nombre de Usuario</th>
-                            <th>Cantidad de Hojas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let personId of getKeys(sumByPerson)">
-                            <td>{{ userNames[personId] || 'Desconocido' }}</td>
-                            <td>{{ sumByPerson[personId] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<!-- Tabla de Hojas por Persona -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">Suma de Hojas por Persona</h5>
     </div>
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0">Suma de Hojas perdidas por Persona</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Nombre de Usuario</th>
-                            <th>Cantidad de Hojas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let personId of getKeys(sumByPersonlost)">
-                            <td>{{ userNames[personId] || 'Desconocido' }}</td>
-                            <td>{{ sumByPersonlost[personId] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="thead-light">
+            <tr>
+              <th>Nombre de Usuario</th>
+              <th>Cantidad de Hojas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let personId of keysPaginated | paginate: { itemsPerPage: 50, currentPage: page, id: 'personPages' }">
+              <td>{{ userNames[personId] || 'Desconocido' }}</td>
+              <td>{{ sumByPerson[personId] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <pagination-controls 
+        (pageChange)="page = $event" 
+        id="personPages"
+        previousLabel="Anterior" 
+        nextLabel="Siguiente"
+        class="d-flex justify-content-center mt-3">
+      </pagination-controls>
     </div>
+  </div>
+  
+  <!-- Tabla de Hojas Perdidas por Persona -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">Suma de Hojas Perdidas por Persona</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="thead-light">
+            <tr>
+              <th>Nombre de Usuario</th>
+              <th>Cantidad de Hojas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let personId of keysPaginatedLost | paginate: { itemsPerPage: 50, currentPage: pageLost, id: 'lostPages' }">
+              <td>{{ userNames[personId] || 'Desconocido' }}</td>
+              <td>{{ sumByPersonlost[personId] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <pagination-controls 
+        (pageChange)="pageLost = $event" 
+        id="lostPages"
+        previousLabel="Anterior" 
+        nextLabel="Siguiente"
+        class="d-flex justify-content-center mt-3">
+      </pagination-controls>
+    </div>
+  </div>
+  
 </div>

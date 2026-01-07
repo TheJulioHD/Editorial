@@ -3,4 +3,5 @@ export interface ClsModRelHoja {
     cantidadHojas: number;
     cantidadLostHojas? : number;
     cantLostHojas? : number;
+    date: Date;
   }

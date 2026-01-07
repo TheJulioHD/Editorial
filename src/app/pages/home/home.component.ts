@@ -13,21 +13,37 @@ export class HomeComponent implements OnInit {
 
   sumByDaylost: { [key: string]: number } = {}; // Suma de hojas por día
   sumByDay: { [key: string]: number } = {}; // Suma de hojas por día
-  sumByPersonlost: { [key: string]: number } = {}; 
-  sumByPerson: { [key: string]: number } = {}; 
+  // Suma de hojas por mes (YYYY-MM)
+  sumByMonth: { [key: string]: number } = {};
+  sumByMonthlost: { [key: string]: number } = {};
+  sumByPersonlost: { [key: string]: number } = {};
+  sumByPerson: { [key: string]: number } = {};
   userNames: { [key: string]: string } = {}; // Suma de hojas por persona
   totalSheets: number = 0; // Total de hojas en general
   totalSheetslost: number = 0; // Total de hojas en general
   totalSheetstotal: number = 0; // Total de hojas en general
   departamentos: ClsModRelHoja2[] = [];
+  departamentos2: ClsModRelHoja2[] = [];
+  currentPage: number = 1;
+  rpp = 50;
+
+  page: number = 1;
+  pageLost: number = 1;
+
+  keysPaginated: number[] = [];
+  keysPaginatedLost: number[] = [];
+  sortedDayKeys: string[] = [];
+  sortedMonthKeys: string[] = [];
+
 
   constructor(private user: UserService) { }
 
   ngOnInit(): void {
-    const pagina: SearchModel ={
-      pagina: 1,
-      rpp:1000,
-      textoBusqueda:''
+    this.getData();
+    const pagina: SearchModel = {
+      pagina: this.currentPage,
+      rpp: 100000000,
+      textoBusqueda: ''
 
     };
     this.user.postInfo(pagina).subscribe({
@@ -42,11 +58,32 @@ export class HomeComponent implements OnInit {
           }
           return acc;
         }, {} as { [key: string]: number });
-        
+        this.sortedDayKeys = Object.keys(this.sumByDay).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+        // Agrupar por mes (YYYY-MM)
+        this.sumByMonth = this.departamentos.reduce((acc, curr) => {
+          const dateKey = this.formatDate(curr.creationDate); // YYYY-MM-DD
+          if (dateKey) {
+            const monthKey = dateKey.slice(0, 7); // YYYY-MM
+            acc[monthKey] = (acc[monthKey] || 0) + curr.cantidadHojas;
+          }
+          return acc;
+        }, {} as { [key: string]: number });
+        this.sortedMonthKeys = Object.keys(this.sumByMonth).sort((a, b) => new Date(a + '-01').getTime() - new Date(b + '-01').getTime());
+
         this.sumByDaylost = this.departamentos.reduce((acc, curr) => {
           const dateKey = this.formatDate(curr.creationDate); // Formato YYYY-MM-DD
           if (dateKey) {
             acc[dateKey] = (acc[dateKey] || 0) + curr.cantLostHojas;
+          }
+          return acc;
+        }, {} as { [key: string]: number });
+        // Agrupar perdidas por mes
+        this.sumByMonthlost = this.departamentos.reduce((acc, curr) => {
+          const dateKey = this.formatDate(curr.creationDate);
+          if (dateKey) {
+            const monthKey = dateKey.slice(0, 7);
+            acc[monthKey] = (acc[monthKey] || 0) + curr.cantLostHojas;
           }
           return acc;
         }, {} as { [key: string]: number });
@@ -58,17 +95,18 @@ export class HomeComponent implements OnInit {
 
         // Sumar hojas por persona
         this.sumByPerson = this.departamentos.reduce((acc, curr) => {
-          acc[curr.idUsuario] = (acc[curr.idUsuario] || 0) + curr.cantidadHojas;
+          acc[curr.id] = (acc[curr.id] || 0) + curr.cantidadHojas;
+          console.log(`ID: ${curr.id}, Hojas: ${curr.cantidadHojas}`);
           return acc;
         }, {} as { [key: number]: number });
         this.sumByPersonlost = this.departamentos.reduce((acc, curr) => {
-          acc[curr.idUsuario] = (acc[curr.idUsuario] || 0) + curr.cantLostHojas;
+          acc[curr.id] = (acc[curr.id] || 0) + curr.cantLostHojas;
           return acc;
         }, {} as { [key: number]: number });
 
-         // Crear el mapa de nombres
-         this.userNames = this.departamentos.reduce((acc, curr) => {
-          acc[curr.idUsuario] = curr.name; // Asegúrate de que este campo exista
+        // Crear el mapa de nombres
+        this.userNames = this.departamentos.reduce((acc, curr) => {
+          acc[curr.id] = curr.name; // Asegúrate de que este campo exista
           return acc;
         }, {} as { [key: number]: string });
 
@@ -76,6 +114,11 @@ export class HomeComponent implements OnInit {
         this.totalSheets = this.departamentos.reduce((total, curr) => total + curr.cantidadHojas, 0);
         this.totalSheetslost = this.departamentos.reduce((total, curr) => total + curr.cantLostHojas, 0);
         this.totalSheetstotal = this.totalSheets + this.totalSheetslost;
+        this.keysPaginated = Object.keys(this.sumByPerson).map(Number);
+        this.keysPaginatedLost = Object.keys(this.sumByPersonlost).map(Number);
+
+        // this.keysPaginatedByDay = Object.keys(this.sumByDay);
+        // this.keysPaginatedByDayLost = Object.keys(this.sumByDaylost);
 
         console.log('Datos recibidos:', this.departamentos);
         console.log('Suma por día perdida:', this.sumByDaylost);
@@ -89,6 +132,41 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  convertToLocal(dateFromSql: string): Date {
+    return new Date(dateFromSql + 'Z');
+  }
+
+
+  getData() {
+    const pagina: SearchModel = {
+      pagina: this.currentPage,
+      rpp: this.rpp,
+      textoBusqueda: ''
+    };
+
+    this.user.postInfo(pagina).subscribe({
+      next: (res: ClsModRelHoja2[]) => {
+        this.departamentos2 = res;
+
+        // Aquí va toda tu lógica para sumar por día, persona, total, etc...
+      },
+      error: (err) => {
+        console.error('Error al obtener datos:', err);
+      }
+    });
+  }
+
+  nextPage() {
+    this.currentPage++;
+    this.getData();
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.getData();
+    }
+  }
   exportToExcel(): void {
     // Estructurar datos para exportar
     const sheetData = [
@@ -166,7 +244,7 @@ export class HomeComponent implements OnInit {
   getKeys2(obj: any): string[] {
     return Object.keys(obj);
   }
-  
+
   getKeys(obj: { [key: number]: number }): number[] {
     return Object.keys(obj).map(key => +key); // Convertir claves a números
   }

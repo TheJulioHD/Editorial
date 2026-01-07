@@ -30,7 +30,8 @@ export class RegistroComponent implements OnInit {
     this.typeaheadForm2 = new FormGroup({
       cant: new FormControl('', Validators.required), // Ajusta las validaciones según sea necesario
       cantlost: new FormControl(''), // Ajusta las validaciones según sea necesario
-      isCheck: new FormControl(''), // Ajusta las validaciones según sea necesario
+      isCheck: new FormControl(''), 
+      fecha: new FormControl('', Validators.required), // Ajusta las validaciones según sea necesario
     });
   }
 
@@ -51,14 +52,21 @@ export class RegistroComponent implements OnInit {
       // Call the service to fetch results based on search term
       this.user.getall(paginationData).subscribe({
         next: (response) => {
-          this.results = response; // Ensure response is handled
-          this.filteredSuggestions = this.results.map((item: any) => item.name); // Adjust field to match response structure
-          console.log('Datos obtenidos:', this.filteredSuggestions);
-          // this.id = this.results.map((item: any) => item.id);
-          this.id = this.results.length > 0 ? this.results[0].id : 0; // Cambia "id" al campo correcto
-          console.log('ID seleccionado:', this.id);
-        },
-        error: (err) => {
+            // reemplazo: guardo resultados completos y mapeo sugerencias con id
+            this.results = response;
+            // Guardar objetos con id y nombre para poder recuperar el id al seleccionar
+            this.suggestions = this.results.map((item: any) => ({ id: item.control, name: item.name }));
+            // Mostrar solo los nombres en filteredSuggestions (si tu template espera strings)
+            this.filteredSuggestions = this.suggestions.map(s => s.name);
+            console.log('Datos obtenidos:', this.filteredSuggestions);
+            // Si el valor del input coincide exactamente con una sugerencia, asigno el id
+            // const exact = this.suggestions.find(s => s.name === target.value);
+            // if (exact) {
+            // this.id = exact.control;
+            // console.log('ID asignado automáticamente:', this.id);
+            // }
+          },
+          error: (err) => {
           console.error('Error al obtener datos:', err);
         }
         
@@ -67,25 +75,48 @@ export class RegistroComponent implements OnInit {
   }
 
   selectSuggestion(suggestion: string): void {
-    this.typeaheadForm!.get('searchTerm')?.setValue(suggestion);
+      // Poner el nombre en el input
+  this.typeaheadForm!.get('searchTerm')?.setValue(suggestion);
 
-    // Crear el objeto de paginación
-    
+  // Buscar el objeto original (id + name)
+  const selectedObj = this.suggestions.find(s => s.name === suggestion);
 
-    // Llamar al método del servicio
+  if (selectedObj) {
+    this.id = selectedObj.id;
+    console.log("Seleccionado:", selectedObj);
+    console.log("ID:", this.id);
+  }
 
-    // Limpia las sugerencias
-    this.filteredSuggestions = [];
+  // Ocultar sugerencias
+  this.filteredSuggestions = [];
+
   }
 
   enviar() {
     
     if (this.typeaheadForm2?.valid) {
+      const fechaVal = this.typeaheadForm2.value.fecha;
+      const fechaObj = fechaVal ? new Date(fechaVal) : new Date();
+
+        //  const fechaVal = this.typeaheadForm2.value.fecha; // yyyy-MM-dd
+      // const ahora = new Date(); // hora actual REAL
+
+      // const fechaFinal = new Date(fechaVal);
+      // fechaFinal.setHours(
+      //   ahora.getHours(),
+      //   ahora.getMinutes(),
+      //   ahora.getSeconds(),
+      //   ahora.getMilliseconds()
+      // );
+
+    console.log('Fecha con hora automática:', fechaObj);
+
       const user3: ClsModRelHoja = {
-        cantidadHojas:this.typeaheadForm2.value.cant,
-        idUsuario: this.id, 
-        cantidadLostHojas: (this.typeaheadForm2.value.cantlost == '' ) ? 0 : this.typeaheadForm2.value.cantlost 
-      }
+        cantidadHojas: this.typeaheadForm2.value.cant,
+        idUsuario: this.id,
+        cantidadLostHojas: (this.typeaheadForm2.value.cantlost == '' ) ? 0 : this.typeaheadForm2.value.cantlost,
+        date: fechaObj
+      };
   
       // Llama al servicio add2
       this.user.add2(user3).subscribe({
@@ -98,9 +129,7 @@ export class RegistroComponent implements OnInit {
         },
       });
   
-      console.log(
-        `${this.typeaheadForm2.value.cant.trim()} prueba ${this.id}`
-      );
+      console.log(`${this.typeaheadForm2.value.cant} prueba ${this.id} fecha:${fechaObj.toISOString()}`);
 
       
     } else {

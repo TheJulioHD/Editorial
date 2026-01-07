@@ -29,4 +29,100 @@
     font-weight: 700;
     color: #343a40;
   }
+  /* Charts styles (CSS-only visuals) */
+  .charts {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+  }
+
+  .bar-chart {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .bar-label {
+    width: 120px;
+    font-size: 0.9rem;
+    color: #495057;
+  }
+
+  .bar {
+    flex: 1 1 auto;
+    height: 18px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg,#28a745,#198754);
+    border-radius: 10px 0 0 10px;
+    transition: width 600ms ease;
+  }
+
+  .bar-value {
+    width: 60px;
+    text-align: right;
+    color: #343a40;
+    font-weight: 600;
+  }
+
+  .donut-card {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .donut {
+    --size: 200px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: inset 0 0 0 16px rgba(255,255,255,0.9);
+  }
+
+  .donut-center {
+    position: absolute;
+    inset: 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    font-weight:700;
+    color:#343a40;
+  }
+
+  .legend {
+    margin-top: 0.8rem;
+    display:flex;
+    gap:0.8rem;
+    font-size:0.9rem;
+  }
+
+  .legend-item { display:flex; gap:0.4rem; align-items:center }
+  .legend-swatch { width:12px; height:12px; border-radius:2px }
+
+  @media (max-width: 900px){
+    .charts{ grid-template-columns: 1fr; }
+    .bar-label{ width: 100px }
+  }
   

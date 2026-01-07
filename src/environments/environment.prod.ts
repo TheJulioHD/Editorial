@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  URlApiEditorial: 'https://editorialith.somee.com/api/'
+  // URlApiEditorial: 'https://www.EditorialITh.somee.com/api/'
+  URlApiEditorial: 'https://localhost:44359/api/'
 
 };

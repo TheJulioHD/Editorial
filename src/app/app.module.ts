@@ -11,6 +11,10 @@ import { RegistroComponent } from './pages/registro/registro.component';
 import { AddUserComponent } from './pages/add-user/add-user.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NoFoundComponent } from './pages/no-found/no-found.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { HelpComponent } from './pages/help/help.component';
+// import { ChartsModule } from 'ng2-charts';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,12 +22,15 @@ import { NoFoundComponent } from './pages/no-found/no-found.component';
     HomeComponent,
     RegistroComponent,
     AddUserComponent,
-    NoFoundComponent
+    NoFoundComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    NgxPaginationModule,
+    // ChartsModule,
     HttpClientModule
   ],
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy },
